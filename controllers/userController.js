@@ -5,6 +5,7 @@ const User = require('../models/User');
 const { JWT_SECRET } = require('../config/jwt');
 const crypto = require('crypto');
 const emailQueue = require('../queues/emailQueue');
+const sendEmail = require('../utils/sendEmail');
 const AppError = require('../utils/AppError');
 
 // READ ALL
@@ -241,10 +242,16 @@ exports.forgotPassword = async (req, res, next) => {
 
     await user.save();
 
-    await emailQueue.add({
-      email: user.email,
-      otp
-    });
+    try {
+      await emailQueue.add({
+        email: user.email,
+        otp
+      });
+    } catch (queueErr) {
+      // Fallback keeps password reset working if Redis queue is unavailable.
+      console.warn(`⚠️ Queue unavailable, sending OTP directly: ${queueErr.message}`);
+      await sendEmail(user.email, 'OTP', `Your OTP is ${otp}`);
+    }
 
     res.json({
       message: "OTP sent to email ✅"

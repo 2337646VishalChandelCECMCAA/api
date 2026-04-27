@@ -36,7 +36,11 @@ app.use(errorHandler);
 // DB + Redis + Worker
 const connectDB = require('./db');
 const { connectRedis } = require('./config/redis');
-require('./workers/emailWorker');
+if (process.env.REDIS_URL) {
+  require('./workers/emailWorker');
+} else {
+  console.warn('⚠️ REDIS_URL not set, worker disabled');
+}
 
 // Start server
 const startServer = async () => {

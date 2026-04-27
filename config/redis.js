@@ -1,8 +1,16 @@
 const { createClient } = require('redis');
 
-const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+const redisUrl = process.env.REDIS_URL;
+const isProd = process.env.NODE_ENV === 'production';
+const isLocalRedis = redisUrl && /127\.0\.0\.1|localhost/.test(redisUrl);
+const redisEnabled = redisUrl && !(isProd && isLocalRedis);
+
+if (isProd && isLocalRedis) {
+  console.warn('⚠️ REDIS_URL points to localhost in production, cache disabled');
+}
+
 const client = createClient({
-  url: redisUrl,
+  url: redisUrl || 'redis://127.0.0.1:6379',
   socket: {
     reconnectStrategy: (retries) => {
       // Stop retrying quickly so local dev can continue without Redis.
@@ -38,6 +46,10 @@ client.on('error', (err) => {
 });
 
 const connectRedis = async () => {
+  if (!redisEnabled) {
+    return;
+  }
+
   try {
     if (!client.isOpen) {
       await client.connect();
@@ -52,7 +64,7 @@ const connectRedis = async () => {
   }
 };
 
-const isRedisReady = () => client.isReady && redisReady;
+const isRedisReady = () => redisEnabled && client.isReady && redisReady;
 
 module.exports = {
   client,

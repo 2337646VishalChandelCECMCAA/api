@@ -36,10 +36,18 @@ app.use(errorHandler);
 // DB + Redis + Worker
 const connectDB = require('./db');
 const { connectRedis } = require('./config/redis');
-if (process.env.REDIS_URL) {
+const isProd = process.env.NODE_ENV === 'production';
+const hasRedisUrl = !!process.env.REDIS_URL;
+const isLocalRedis = hasRedisUrl && /127\.0\.0\.1|localhost/.test(process.env.REDIS_URL);
+
+if (hasRedisUrl && !(isProd && isLocalRedis)) {
   require('./workers/emailWorker');
 } else {
-  console.warn('⚠️ REDIS_URL not set, worker disabled');
+  if (isProd && isLocalRedis) {
+    console.warn('⚠️ REDIS_URL points to localhost in production, worker disabled');
+  } else {
+    console.warn('⚠️ REDIS_URL not set, worker disabled');
+  }
 }
 
 // Start server

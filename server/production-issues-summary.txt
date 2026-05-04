@@ -1,0 +1,32 @@
+Production issues and fixes
+
+1. Missing dependency: express-rate-limit
+Problem:
+- Render crashed with "Cannot find module 'express-rate-limit'" because middleware/rateLimiter.js required it but package.json did not include it.
+Fix:
+- Installed express-rate-limit and pushed the updated package.json and package-lock.json.
+
+2. Database connection was hardcoded to localhost
+Problem:
+- db.js used mongodb://127.0.0.1:27017/userDB, which fails on Render because there is no local MongoDB there.
+Fix:
+- Changed db.js to use process.env.MONGO_URI first, with localhost only as a local fallback.
+
+3. Redis/queue was pointing to localhost in production
+Problem:
+- REDIS_URL was set to redis://127.0.0.1:6379, so the cache and Bull email queue tried to connect to local Redis and logged repeated ECONNREFUSED errors.
+Fix:
+- Added production guards so the app disables Redis queue/cache when REDIS_URL points to localhost in production.
+- Made the email worker load only when a real Redis URL is present.
+- Added a fallback in forgotPassword so OTP sending still works even if the queue is unavailable.
+
+4. MongoDB Atlas blocked Render
+Problem:
+- Atlas rejected the connection because Render's IP was not whitelisted.
+Fix required outside code:
+- Add 0.0.0.0/0 in Atlas Network Access for quick testing, or allow Render's outbound IPs.
+- Redeploy after updating the allowlist.
+
+Summary
+- Code issues were fixed and pushed to GitHub.
+- The remaining production requirement is Atlas network access configuration.

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../api/api";
-import AuthLayout from "../components/AuthLayout";
+import heroImage from "../assets/hero.png";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -47,90 +47,157 @@ export default function Login() {
   };
 
   return (
-    <AuthLayout>
-      <div className="text-center mb-6">
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">Welcome back</h1>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">Sign in to continue to your account</p>
-      </div>
+    <main className="auth-page">
+      <section className="auth-shell">
+        <aside className="auth-hero" aria-label="Login inspiration panel">
+          <div className="auth-hero-media">
+            <img src={heroImage} alt="Abstract stacked platform artwork" className="auth-hero-image" />
+            <div className="auth-hero-overlay" />
 
-      {error && (
-        <div className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-900/30">{error}</div>
-      )}
+            <div className="auth-hero-top">
+              <div className="auth-brand">USER API</div>
+              <Link to="/" className="auth-back-link">
+                Back to website
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-md border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 hover:shadow-md dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-100"
-            placeholder="you@example.com"
-            required
-          />
-        </div>
-
-        <div className="relative">
-          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">Password</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-md border border-gray-200 bg-white px-4 py-3 pr-16 text-gray-900 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 hover:shadow-md dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-100"
-            placeholder="Your password"
-            required
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword((s) => !s)}
-            className="absolute right-3 top-[2.5rem] text-sm font-medium text-gray-500 transition hover:text-indigo-600"
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
-        </div>
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2">
-            <input
-              id="remember"
-              type="checkbox"
-              checked={remember}
-              onChange={() => setRemember((r) => !r)}
-              className="h-4 w-4 text-indigo-600 rounded"
-            />
-            <label htmlFor="remember" className="text-sm text-gray-600 dark:text-gray-300">
-              Remember me
-            </label>
+            <div className="auth-hero-copy">
+              <p>Secure access, wrapped in a calm violet interface.</p>
+              <div className="auth-hero-dots" aria-hidden="true">
+                <span />
+                <span />
+                <span className="is-active" />
+              </div>
+            </div>
           </div>
+        </aside>
 
-          <div className="flex items-center gap-4">
-            <Link to="/register" className="text-sm font-medium text-indigo-600 hover:underline">
-              Create account
-            </Link>
-            <Link to="/forgot-password" className="text-sm font-medium text-indigo-600 hover:underline">
-              Forgot password?
-            </Link>
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-5 py-3 font-medium text-white transition hover:bg-indigo-700 disabled:opacity-60 active:scale-95"
-            >
-              {loading ? (
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
-                  <path
-                    fill="currentColor"
-                    className="opacity-75"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        <div className="auth-panel">
+          <div className="auth-panel-inner">
+            <div className="auth-header">
+              <h1>Welcome back</h1>
+              <p>
+                Sign in to continue to your account. New here? <Link to="/register">Create one</Link>
+              </p>
+            </div>
+
+            {error && <div className="auth-error">{error}</div>}
+
+            <form onSubmit={handleSubmit} className="auth-form">
+              <div className="auth-field">
+                <label htmlFor="email" className="auth-label">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="auth-input"
+                  placeholder="you@example.com"
+                  required
+                />
+              </div>
+
+              <div className="auth-field">
+                <label htmlFor="password" className="auth-label">
+                  Password
+                </label>
+                <div className="auth-input-wrap">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="auth-input auth-input-with-icon"
+                    placeholder="Enter your password"
+                    required
                   />
-                </svg>
-              ) : (
-                "Sign in"
-              )}
-            </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((current) => !current)}
+                    className="auth-password-toggle"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M3.98 8.223A11.13 11.13 0 0 1 12 5.25c5.002 0 8.907 3.02 10.02 6.75a10.53 10.53 0 0 1-2.22 3.62M6.65 6.65l10.7 10.7M9.5 9.5a3.5 3.5 0 1 0 4.95 4.95"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M2.5 12s3.75-6.75 9.5-6.75S21.5 12 21.5 12s-3.75 6.75-9.5 6.75S2.5 12 2.5 12Z"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="3"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="auth-row">
+                <label className="auth-remember">
+                  <input
+                    id="remember"
+                    type="checkbox"
+                    checked={remember}
+                    onChange={() => setRemember((current) => !current)}
+                    className="auth-checkbox"
+                  />
+                  <span>Remember me</span>
+                </label>
+
+                <Link to="/forgot-password" className="auth-inline-link">
+                  Forgot password?
+                </Link>
+              </div>
+
+              <button type="submit" disabled={loading} className="auth-button">
+                {loading ? <span className="auth-spinner" aria-hidden="true" /> : "Sign in"}
+              </button>
+            </form>
+
+            <div className="auth-divider">
+              <span>Or continue with</span>
+            </div>
+
+            <div className="auth-social">
+              <button type="button" className="auth-social-button">
+                <span className="auth-social-icon google" aria-hidden="true">
+                  G
+                </span>
+                Google
+              </button>
+              <button type="button" className="auth-social-button">
+                <span className="auth-social-icon apple" aria-hidden="true">
+                  
+                </span>
+                Apple
+              </button>
+            </div>
           </div>
         </div>
-      </form>
-    </AuthLayout>
+      </section>
+    </main>
   );
 }

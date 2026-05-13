@@ -6,6 +6,7 @@ import ProtectedRoute from "./assets/ProtectedRoute";
 import ForgotPassword from "./pages/ForgotPassword";
 import VerifyOtp from "./pages/VerifyOtp";
 import ResetPassword from "./pages/ResetPassword";
+import "./App.css";
 
 function App() {
   return (

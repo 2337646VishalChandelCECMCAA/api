@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:3000';
+const baseUrl = process.env.TEST_BASE_URL || 'http://localhost:5000';
 const runId = Date.now().toString(36);
 
 async function post(path, body) {

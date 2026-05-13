@@ -40,6 +40,33 @@ const isProd = process.env.NODE_ENV === 'production';
 const hasRedisUrl = !!process.env.REDIS_URL;
 const isLocalRedis = hasRedisUrl && /127\.0\.0\.1|localhost/.test(process.env.REDIS_URL);
 
+const normalizePort = (value) => {
+  const port = Number.parseInt(value, 10);
+  return Number.isNaN(port) ? value : port;
+};
+
+const startListening = (initialPort) => {
+  const port = normalizePort(initialPort);
+
+  const server = app.listen(port, () => {
+    console.log(`Server running on http://localhost:${server.address().port}`);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE' && typeof port === 'number') {
+      const nextPort = port + 1;
+      console.warn(`⚠️ Port ${port} is in use, retrying on ${nextPort}`);
+      server.close(() => startListening(nextPort));
+      return;
+    }
+
+    console.error('❌ Server failed to start:', err.message);
+    process.exit(1);
+  });
+
+  return server;
+};
+
 if (hasRedisUrl && !(isProd && isLocalRedis)) {
   require('./workers/emailWorker');
 } else {
@@ -56,9 +83,7 @@ const startServer = async () => {
     await connectDB();
     await connectRedis();
 
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-    });
+    startListening(PORT);
 
   } catch (err) {
     console.error('❌ Server failed to start:', err.message);

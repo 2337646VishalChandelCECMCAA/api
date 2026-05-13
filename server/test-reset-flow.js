@@ -1,8 +1,9 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const User = require('./models/User');
 
-const baseUrl = 'http://localhost:3000';
+const baseUrl = process.env.TEST_BASE_URL || 'http://localhost:5000';
 const letters = 'abcdefghijklmnopqrstuvwxyz';
 const suffix = Array.from(crypto.randomBytes(6), (byte) => letters[byte % 26]).join('');
 const name = `Reset${suffix}`;
@@ -43,7 +44,8 @@ async function main() {
     throw new Error(`register failed: ${JSON.stringify(register.data)}`);
   }
 
-  await mongoose.connect('mongodb://127.0.0.1:27017/userDB');
+  const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/userDB';
+  await mongoose.connect(mongoUri);
   await User.updateOne(
     { email },
     { $set: { isOtpVerified: true, otpAttempts: 0 } }

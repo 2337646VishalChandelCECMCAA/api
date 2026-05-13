@@ -204,6 +204,9 @@ exports.login = async (req, res, next) => {
       { expiresIn: "1h" }
     );
 
+    user.lastLogin = new Date();
+    await user.save();
+
     res.status(200).json({
       message: "Login successful ✅",
       token
